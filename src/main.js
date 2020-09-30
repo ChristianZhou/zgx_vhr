@@ -13,7 +13,7 @@ import {deleteRequest} from "@/utils/api";
 Vue.config.productionTip = false
 
 Vue.use(ElementUI);
-Vue.prototype.postKetValueRequest = postKeyValueRequest;
+Vue.prototype.postKeyValueRequest = postKeyValueRequest;
 Vue.prototype.postRequest = postRequest;
 Vue.prototype.getRequest = getRequest;
 Vue.prototype.putRequest = putRequest;
