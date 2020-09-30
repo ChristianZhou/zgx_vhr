@@ -17,7 +17,6 @@
 </template>
 
 <script>
-import {postKeyValueRequest} from "@/utils/api";
 
 export default {
   name: "Login",
@@ -25,13 +24,12 @@ export default {
     submitLogin() {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          postKeyValueRequest('/doLogin', this.loginForm).then(value => {
+          this.postKeyValueRequest('/doLogin', this.loginForm).then(value => {
             if (value) {
               window.sessionStorage.setItem("user", JSON.stringify(value));
               this.$router.replace("/home");
             }
           })
-          // alert('submit!');
         } else {
           console.log('error submit!!');
           this.$message.error("Please input all field!")
