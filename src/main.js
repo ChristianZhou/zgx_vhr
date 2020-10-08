@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import store from './store'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
@@ -9,6 +10,8 @@ import {postRequest} from "@/utils/api";
 import {getRequest} from "@/utils/api";
 import {putRequest} from "@/utils/api";
 import {deleteRequest} from "@/utils/api";
+import {initMenu} from "@/utils/menus";
+import 'font-awesome/css/font-awesome.min.css'
 
 Vue.config.productionTip = false
 
@@ -19,7 +22,20 @@ Vue.prototype.getRequest = getRequest;
 Vue.prototype.putRequest = putRequest;
 Vue.prototype.deleteRequest = deleteRequest;
 
+//导航守卫
+router.beforeEach((to, from, next) => {
+    if (to.path === '/') {
+        //如果要去的时login页
+        next();
+    } else {
+        initMenu(router, store)
+        next();
+    }
+})
+
+
 new Vue({
-  router,
-  render: h => h(App)
+    router,
+    store,
+    render: h => h(App)
 }).$mount('#app')

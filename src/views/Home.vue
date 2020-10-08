@@ -19,10 +19,10 @@
 			</el-header>
 			<el-container>
 				<el-aside width="200px">
-					<el-menu router>
-						<el-submenu index="1" v-for="(item, index) in this.$router.options.routes" v-if="!item.hidden" :key="index">
+					<el-menu router unique-opened>
+						<el-submenu :index="index + ''" v-for="(item, index) in routes" v-if="!item.hidden" :key="index">
 							<template slot="title">
-								<i class="el-icon-location"></i>
+								<i :class="item.iconCls" style="color: #3083ff; margin-right: 5px"></i>
 								<span>{{ item.name }}</span>
 							</template>
 							<el-menu-item :index="child.path" v-for="(child, indexSub) in item.children" :key="indexSub">
@@ -32,6 +32,11 @@
 					</el-menu>
 				</el-aside>
 				<el-main>
+					<el-breadcrumb separator-class="el-icon-arrow-right"  v-if=" this.$router.currentRoute.path  !== '/home'">
+						<el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+						<el-breadcrumb-item>{{ this.$router.currentRoute.name }}</el-breadcrumb-item>
+					</el-breadcrumb>
+					<div class="homeWelcome" v-if=" this.$router.currentRoute.path  === '/home'"> 欢迎来到七号公园!</div>
 					<router-view/>
 				</el-main>
 			</el-container>
@@ -47,6 +52,11 @@ export default {
 			user: JSON.parse(window.sessionStorage.getItem("user"))
 		}
 	},
+	computed: {
+		routes() {
+			return this.$store.state.routes;
+		}
+	},
 	methods: {
 		commandHandler(cmd) {
 			switch (cmd) {
@@ -59,6 +69,7 @@ export default {
 						this.getRequest("/logout");
 						window.sessionStorage.removeItem("user");
 						this.$router.replace('/');
+						this.$store.commit('initRoutes', []);
 					}).catch((error) => {
 						this.$message({
 							type: 'info',
@@ -110,4 +121,11 @@ export default {
 	margin-left: 8px;
 }
 
+.homeWelcome {
+	text-align: center;
+	font-size: 30px;
+	font-family: "Yu Gothic UI Semilight",serif;
+	color: cornflowerblue;
+	padding-top: 5px;
+}
 </style>

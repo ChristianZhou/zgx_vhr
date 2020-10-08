@@ -6,7 +6,7 @@
 				<el-input type="test" v-model="loginForm.username" autocomplete="off" placeholder="do it!"></el-input>
 			</el-form-item>
 			<el-form-item label="密码" prop="password">
-				<el-input type="password" v-model="loginForm.password" autocomplete="off"
+				<el-input type="password" v-model="loginForm.password" autocomplete="off" @keydown.enter.native="submitLogin"
 						  aria-placeholder="do it now!"></el-input>
 			</el-form-item>
 			<el-checkbox v-model="checked" class="loginRemember"></el-checkbox>
