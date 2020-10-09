@@ -28,8 +28,12 @@ router.beforeEach((to, from, next) => {
         //如果要去的时login页
         next();
     } else {
-        initMenu(router, store)
-        next();
+        if(window.sessionStorage.getItem("user")) {
+            initMenu(router, store)
+            next();
+        } else {
+            next(`/?redirect=${to.path}`);
+        }
     }
 })
 

@@ -28,7 +28,8 @@ export default {
 					this.postKeyValueRequest('/doLogin', this.loginForm).then(value => {
 						if (value && value.obj) {
 							window.sessionStorage.setItem("user", JSON.stringify(value.obj));
-							this.$router.replace("/home");
+							let path = this.$route.query.redirect;
+							this.$router.replace((path === '/' || path === undefined) ? "/home" : path);
 						}
 					})
 				} else {
