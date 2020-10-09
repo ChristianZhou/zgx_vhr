@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<el-form v-bind:rules="rules" ref="loginForm" v-bind:model="loginForm" class="loginContainer">
-			<h3 class="loginTitle">VHR</h3>
+			<h3 class="loginTitle">七号公园</h3>
 			<el-form-item label="用户名" prop="username">
 				<el-input type="test" v-model="loginForm.username" autocomplete="off" placeholder="do it!"></el-input>
 			</el-form-item>

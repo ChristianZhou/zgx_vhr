@@ -37,7 +37,7 @@
 						<el-breadcrumb-item>{{ this.$router.currentRoute.name }}</el-breadcrumb-item>
 					</el-breadcrumb>
 					<div class="homeWelcome" v-if=" this.$router.currentRoute.path  === '/home'"> 欢迎来到七号公园!</div>
-					<router-view/>
+					<router-view class="homeRouterView"/>
 				</el-main>
 			</el-container>
 		</el-container>
@@ -127,5 +127,9 @@ export default {
 	font-family: "Yu Gothic UI Semilight",serif;
 	color: cornflowerblue;
 	padding-top: 5px;
+}
+
+.homeRouterView {
+	margin-top: 10px;
 }
 </style>
