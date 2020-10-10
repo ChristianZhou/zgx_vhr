@@ -13,12 +13,13 @@
 			<el-button
 				@click="addPosition"
 				icon="el-icon-plus"
-				size="small"
+				size="mini"
 				type="primary">添加
 			</el-button>
 		</div>
 		<div class="posManaMain">
 			<el-table
+				@selection-change="handleSelectionChange"
 				stripe
 				:data="positions"
 				border
@@ -57,6 +58,7 @@
 					</template>
 				</el-table-column>
 			</el-table>
+			<el-button @click="batchDelete" type="danger" size="small" style="margin-top: 8px" :disabled = "multipleSelection.length === 0">批量删除</el-button>
 		</div>
 		<el-dialog
 			title="修改职位"
@@ -79,7 +81,8 @@ export default {
 	name: "PoMana",
 	data() {
 		return {
-			pos: {
+			url: "/system/basic/pos/"
+			, pos: {
 				name: ''
 			}
 			, positions: []
@@ -87,11 +90,13 @@ export default {
 			, updatePos: {
 				name: ''
 			}
+			, multipleSelection: []
 		}
 	},
 	methods: {
+
 		initPosition() {
-			this.getRequest("/system/basic/pos/").then(value => {
+			this.getRequest(this.url).then(value => {
 				if (value) {
 					this.positions = value;
 				}
@@ -107,8 +112,7 @@ export default {
 				, cancelButtonText: '取消'
 				, type: 'warning'
 			}).then(value => {
-				console.log(value)
-				this.deleteRequest("/system/basic/pos/" + row.id).then(value => {
+				this.deleteRequest(this.url + row.id).then(value => {
 					if (value) {
 						this.initPosition()
 					}
@@ -118,7 +122,7 @@ export default {
 		addPosition() {
 			let name = this.pos.name;
 			if (name) {
-				this.postRequest("/system/basic/pos/", this.pos).then(value => {
+				this.postRequest(this.url, this.pos).then(value => {
 					if (value) {
 						this.initPosition();
 						this.clearInput();
@@ -132,11 +136,29 @@ export default {
 			this.pos.name = ''
 		}
 		, doUpdate() {
-			this.putRequest("/system/basic/pos/", this.updatePos).then(value => {
+			this.putRequest(this.url, this.updatePos).then(value => {
 				if (value) {
 					this.initPosition();
 					this.updatePos = {name: ''}
 				}
+			})
+		}
+		, handleSelectionChange(val) {
+			this.multipleSelection = val;
+		}
+		, batchDelete() {
+			this.$confirm('此操作将永久删除【' + this.multipleSelection.length + '】条记录', '提示', {
+				confirmButtonText: '确定'
+				, cancelButtonText: '取消'
+				, type: 'warning'
+			}).then(value => {
+				let ids = '?';
+				this.multipleSelection.forEach(item => ids += 'ids=' + item.id + '&');
+				this.deleteRequest(this.url + ids).then(value => {
+					if (value) {
+						this.initPosition()
+					}
+				})
 			})
 		}
 	},
