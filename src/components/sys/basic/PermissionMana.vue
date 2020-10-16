@@ -4,11 +4,11 @@
 			<el-input size="small" placeholder="请输入角色英文名" v-model="role.name">
 				<template slot="prepend">ROLE_</template>
 			</el-input>
-			<el-input size="small" placeholder="请输入角色中文名" v-model="role.nameZh"></el-input>
-			<el-button type="primary" size="small" icon="el-icon-plus">添加角色</el-button>
+			<el-input size="small" placeholder="请输入角色中文名" v-model="role.nameZh" @keydown.enter.native="doAddRole"></el-input>
+			<el-button type="primary" size="small" icon="el-icon-plus" @click="doAddRole">添加角色</el-button>
 		</div>
 		<div class="permissManaMain">
-			<el-collapse v-model="activeName" accordion>
+			<el-collapse v-model="activeName" accordion  @change="change">
 				<el-collapse-item :title="row.nameZh" :name="row.id" v-for="(row, index) in roles" :key="index">
 					<el-card class="box-card">
 						<div slot="header" class="clearfix">
@@ -17,8 +17,19 @@
 									   icon="el-icon-delete"
 									   type="text"></el-button>
 						</div>
-						<div v-for="o in 4" :key="o" class="text item">
-							{{'列表内容 ' + o }}
+						<div>
+							<el-tree
+								show-checkbox
+								node-key="id"
+								ref="tree"
+								:key="index"
+								:default-checked-keys="selectedMenus"
+								:data="allMenus"
+								:props="defaultProps"></el-tree>
+							<div style="display: flex; justify-content: flex-end">
+								<el-button size="mini" @click="cancelUpdate()">取消修改</el-button>
+								<el-button size="mini" type="primary" @click="doUpdate(row.id, index)">确认修改</el-button>
+							</div>
 						</div>
 					</el-card>
 				</el-collapse-item>
@@ -39,6 +50,12 @@ export default {
 			}
 			, activeName: '1'
 			, roles: []
+			, allMenus: []
+			, defaultProps: {
+				children: 'children',
+				label: 'name'
+			}
+			, selectedMenus: []
 		}
 	}
 	, methods: {
@@ -49,9 +66,61 @@ export default {
 				}
 			})
 		}
+		, initMenus() {
+			this.getRequest(this.url + 'menus').then(value => {
+				if (value) {
+					this.allMenus = value;
+				}
+			})
+		}
+		, change(rid) {
+			if (rid) {
+				this.initMenus()
+				this.initSelectedMenus(rid)
+			}
+		}
+		, initSelectedMenus(rid) {
+			this.getRequest(this.url + 'menuIds/' + rid).then(value => {
+				this.selectedMenus = value
+			})
+		}
+		, doUpdate(rid, index) {
+			let tree = this.$refs.tree[index];
+			let selectKeys = tree.getCheckedKeys(true);
+			let urlTmp = this.url + '?rid=' + rid;
+			selectKeys.forEach(value => {
+				urlTmp += '&mIds=' + value
+			})
+			this.putRequest(urlTmp).then(value => {
+				if (value) {
+					this.activeName = -1
+				}
+			});
+
+		}
+		, cancelUpdate() {
+			this.activeName = -1
+
+		}
+		, doAddRole() {
+			if (this.role.name && this.role.nameZh) {
+				this.postRequest(this.url + '/role', this.role).then(value => {
+					if (value) {
+						this.role = {
+							name: ''
+							, nameZh: ''
+						};
+						this.initRoles();
+					}
+				})
+			} else {
+				this.$message.error("数据不可以为空")
+			}
+		}
 	}
 	, mounted() {
-		this.initRoles()
+		this.initRoles();
+		// this.initMenus();
 	}
 }
 </script>
